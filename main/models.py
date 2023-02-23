@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.forms import ValidationError
 # Create your models here.
 class category(models.Model):
     TYPE=(
@@ -16,19 +17,22 @@ class patients(models.Model):
     names=models.CharField(max_length=100)
     email=models.EmailField(max_length=100)
     password=models.CharField(max_length=12)
-    document=models.FileField(upload_to="uploads")
-    
+
+    def validate_file_extension(value):
+        if not value.name.endswith('.pdf'):
+            raise ValidationError(u'File Not Supported!')
+    identity_doc=models.FileField(upload_to="uploaded_files", validators=[validate_file_extension], null=True)
+    residency=models.FileField(upload_to="uploaded_files", validators=[validate_file_extension], null=True)
     def __str__(self):
         return self.names
 
-class booking(models.Manager):
+class booking(models.Model):
     schedule_name=models.CharField(max_length=250)
-    user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    check_in=models.DurationField()
-    check_out= models.DurationField()
+    user=models.ForeignKey(patients, on_delete=models.CASCADE)
+    check_in=models.DateField()
+    check_out= models.DateField()
 
     def __str__(self):
         return f'{self.user} has booked from {self.check_in} to {self.check_out}'
     def __str__(self):
         return self.schedule_name
-          
