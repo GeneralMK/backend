@@ -4,4 +4,3 @@ from . import models
 
 admin.site.register(models.category)
 admin.site.register(models.patients)
-#admin.site.register(models.schedules)

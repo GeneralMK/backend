@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 # Create your models here.
 class category(models.Model):
     TYPE=(
@@ -21,11 +21,14 @@ class patients(models.Model):
     def __str__(self):
         return self.names
 
-class schedules(models.Manager):
+class booking(models.Manager):
     schedule_name=models.CharField(max_length=250)
-    user=models.ForeignKey(patients, on_delete=models.CASCADE)
-    start_date=models.DateTimeField()
-    end_date= models.DateTimeField()
+    user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    check_in=models.DurationField()
+    check_out= models.DurationField()
 
     def __str__(self):
+        return f'{self.user} has booked from {self.check_in} to {self.check_out}'
+    def __str__(self):
         return self.schedule_name
+          
